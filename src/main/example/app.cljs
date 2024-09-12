@@ -8,12 +8,14 @@
             ["react-native" :as rn]
             [reagent.core :as r]
             ["@react-navigation/native" :as rnn]
-            ["@react-navigation/native-stack" :as rnn-stack]))
+            ["@react-navigation/native-stack" :as rnn-stack]
+            ["@react-navigation/bottom-tabs" :as rnn-tabs]
+            ["react-native-vector-icons/MaterialIcons" :default MaterialIcons]))
 
 (defonce shadow-splash (js/require "../assets/shadow-cljs.png"))
 (defonce cljs-splash (js/require "../assets/cljs.png"))
 
-(defonce Stack (rnn-stack/createNativeStackNavigator))
+(defonce Tabs (rnn-tabs/createBottomTabNavigator))
 
 (defn home [^js props]
   (r/with-let [counter (rf/subscribe [:get-counter])
@@ -52,7 +54,7 @@
        "Using: shadow-cljs+expo+reagent+re-frame"]]
      [:> StatusBar {:style "auto"}]]))
 
-(defn- about 
+(defn- about
   []
   (r/with-let [counter (rf/subscribe [:get-counter])]
     [:> rn/View {:style {:flex 1
@@ -78,8 +80,13 @@
        "Built with React Native, Expo, Reagent, re-frame, and React Navigation"]]
      [:> StatusBar {:style "auto"}]]))
 
+(defn settings []
+  [:> rn/View {:style {:flex 1
+                       :justify-content :center
+                       :align-items :center}}
+   [:> rn/Text "Settings Screen"]])
+
 (defn root []
-  ;; The save and restore of the navigation root state is for development time bliss
   (r/with-let [!root-state (rf/subscribe [:navigation/root-state])
                save-root-state! (fn [^js state]
                                   (rf/dispatch [:navigation/set-root-state state]))
@@ -88,13 +95,17 @@
                                  (.addListener navigation-ref "state" save-root-state!)))]
     [:> rnn/NavigationContainer {:ref add-listener!
                                  :initialState (when @!root-state (-> @!root-state .-data .-state))}
-     [:> Stack.Navigator
-      [:> Stack.Screen {:name "Home"
-                        :component (fn [props] (r/as-element [home props]))
-                        :options {:title "Example App"}}]
-      [:> Stack.Screen {:name "About"
-                        :component (fn [props] (r/as-element [about props]))
-                        :options {:title "About"}}]]]))
+     [:> Tabs.Navigator {:tabBarActiveTintColor "blue"
+                         :tabBarInactiveTintColor "gray"}
+      [:> Tabs.Screen {:name "Home"
+                       :component (fn [props] (r/as-element [home props]))
+                       :options {:title "Home"}}]
+      [:> Tabs.Screen {:name "About"
+                       :component (fn [props] (r/as-element [about props]))
+                       :options {:title "About"}}]
+      [:> Tabs.Screen {:name "Settings"
+                       :component (fn [props] (r/as-element [settings props]))
+                       :options {:title "Settings"}}]]]))
 
 (defn start
   {:dev/after-load true}
