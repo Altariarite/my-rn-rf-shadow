@@ -27,31 +27,33 @@
                          :background-color :white}}
      [:> rn/View {:style {:align-items :center}}
       [scrollable]
-      [:> BalanceCard {:netWorth 1000.50
-                       :lastUpdated "2023-04-15"
-                       :difference 50.25}]
-      [button {:on-press #(rf/dispatch [:inc-counter])
-               :disabled? (not @tap-enabled?)
-               :style {:background-color :blue}}
-       "Tap me, I'll count"]]
+      ;; [:> BalanceCard {:netWorth 1000.50
+      ;;                  :lastUpdated "2023-04-15"
+      ;;                  :difference 50.25}]
+      ;; [button {:on-press #(rf/dispatch [:inc-counter])
+      ;;          :disabled? (not @tap-enabled?)
+      ;;          :style {:background-color :blue}}
+      ;;  "Tap me, I'll count"]
+      ]
      [:> rn/View {:style {:align-items :center}}
-      [button {:on-press (fn []
-                           (-> props .-navigation (.navigate "About")))}
-       "Tap me, I'll navigate"]]
-     [:> rn/View
-      [:> rn/View {:style {:flex-direction :row
-                           :align-items :center
-                           :margin-bottom 20}}
-       [:> rn/Image {:style {:width  160
-                             :height 160}
-                     :source cljs-splash}]
-       [:> rn/Image {:style {:width  160
-                             :height 160}
-                     :source shadow-splash}]]
-      [:> rn/Text {:style {:font-weight :normal
-                           :font-size   15
-                           :color       :blue}}
-       "Using: shadow-cljs+expo+reagent+re-frame"]]
+      ;; [button {:on-press (fn []
+      ;;                      (-> props .-navigation (.navigate "About")))}
+      ;;  "Tap me, I'll navigate"]
+      ]
+    ;;  [:> rn/View
+    ;;   [:> rn/View {:style {:flex-direction :row
+    ;;                        :align-items :center
+    ;;                        :margin-bottom 20}}
+    ;;    [:> rn/Image {:style {:width  160
+    ;;                          :height 160}
+    ;;                  :source cljs-splash}]
+    ;;    [:> rn/Image {:style {:width  160
+    ;;                          :height 160}
+    ;;                  :source shadow-splash}]]
+    ;;   [:> rn/Text {:style {:font-weight :normal
+    ;;                        :font-size   15
+    ;;                        :color       :blue}}
+    ;;    "Using: shadow-cljs+expo+reagent+re-frame"]]
      [:> StatusBar {:style "auto"}]]))
 
 (defn- about

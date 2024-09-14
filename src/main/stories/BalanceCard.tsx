@@ -4,23 +4,24 @@ import { View, Text, StyleSheet } from 'react-native';
 interface BalanceCardProps {
     netWorth: number;
     lastUpdated: string;
-    lastBalance: number;
+    difference: number;
+    isSelected: boolean;
 }
 
-export default ({ netWorth, lastUpdated, difference }) => {
-    const increase = difference > 0;
+export default (props: BalanceCardProps) => {
+    const increase = props.difference > 0;
 
     return (
         <View style={styles.card}>
             <View style={styles.header}>
                 <Text style={styles.label}>Net Worth</Text>
-                <Text style={styles.date}>{lastUpdated}</Text>
+                <Text style={styles.date}>{props.lastUpdated}</Text>
             </View>
-            <Text style={styles.netWorth}>${netWorth.toFixed(2)}</Text>
+            <Text style={styles.netWorth}>${props.netWorth.toFixed(2)}</Text>
             <View style={styles.footer}>
                 <View style={styles.differenceContainer}>
                     <Text style={[styles.difference, { color: increase ? '#4CAF50' : '#F44336' }]}>
-                        {increase ? '+' : '-'}${Math.abs(difference).toFixed(2)}
+                        {increase ? '+' : '-'}${Math.abs(props.difference).toFixed(2)}
                     </Text>
                     <Text style={[styles.arrow, { color: increase ? '#4CAF50' : '#F44336' }]}>
                         {increase ? '↑' : '↓'}
@@ -42,6 +43,7 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.1,
         shadowRadius: 4,
         elevation: 3,
+        marginHorizontal: 16,
     },
     header: {
         flexDirection: 'row',
