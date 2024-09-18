@@ -1,11 +1,13 @@
 (ns example.app
   (:require ["@react-navigation/bottom-tabs" :as rnn-tabs]
             ["@react-navigation/native" :as rnn]
+            ["@react-navigation/native-stack" :as rnn-stack]
             ["expo-status-bar" :refer [StatusBar]]
             ["react-native" :as rn]
             [example.events]
             [example.subs]
-            [example.widgets :refer [BalanceCard button scrollable]]
+            [example.widgets :refer [CashflowScreen InputScreen Modal
+                                     scrollable]]
             [expo.root :as expo-root]
             [re-frame.core :as rf]
             [reagent.core :as r]))
@@ -14,7 +16,14 @@
 (defonce cljs-splash (js/require "../assets/cljs.png"))
 
 (defonce Tabs (rnn-tabs/createBottomTabNavigator))
+(defonce Stack (rnn-stack/createNativeStackNavigator))
 
+(def dummy-data
+  [{:id "1" :netWorth 10000.50 :lastUpdated "2023-04-15" :difference 500.25}
+   {:id "2" :netWorth 15000.75 :lastUpdated "2023-04-16" :difference -200.50}
+   {:id "3" :netWorth 8000.00 :lastUpdated "2023-04-17" :difference 100.00}
+   {:id "4" :netWorth 12500.25 :lastUpdated "2023-04-18" :difference 300.75}
+   {:id "5" :netWorth 9800.50 :lastUpdated "2023-04-19" :difference -150.25}])
 
 
 (defn home [^js props]
@@ -26,7 +35,10 @@
                          :align-items :center
                          :background-color :white}}
      [:> rn/View {:style {:align-items :center}}
-      [scrollable]
+      [scrollable {:data dummy-data
+                   :is-loading false
+                   :on-end-reached #(println "End reached")
+                   :selected-id "1"}]
       ;; [:> BalanceCard {:netWorth 1000.50
       ;;                  :lastUpdated "2023-04-15"
       ;;                  :difference 50.25}]
@@ -82,11 +94,25 @@
        "Built with React Native, Expo, Reagent, re-frame, and React Navigation"]]
      [:> StatusBar {:style "auto"}]]))
 
-(defn settings []
-  [:> rn/View {:style {:flex 1
-                       :justify-content :center
-                       :align-items :center}}
-   [:> rn/Text "Settings Screen"]])
+(defn settings [^js props]
+  [:> rn/SafeAreaView {:style {:flex 1}
+                       :justifyContent "flex-end"}
+   [:> CashflowScreen {:items {:2024-05-01 [{:id "1" :amount 100 :type "income" :tags ["food" "restaurants"] :date "2024-05-01"}
+                                            {:id "2" :amount 200 :type "expense" :tags ["food" "restaurants"] :date "2024-05-01"}]
+                               :2024-05-02 [{:id "3" :amount 300 :type "income" :tags ["food" "restaurants"] :date "2024-05-02"}]
+                               :2024-05-03 [{:id "4" :amount 400 :type "expense" :tags ["food" "restaurants"] :date "2024-05-03"}]}
+                       :onAddItem #(-> (.-navigation props) (.navigate "InputModal"))}]])
+
+(defn input-modal [^js props]
+  [:> InputScreen {:account-name "Cash"
+                   :remaining-balance 1000.50
+                   :current-date "2023-04-15"
+                   :on-amount-change #(println "Amount changed to:" %)
+                   :on-calendar-press #(println "Calendar pressed")
+                   :on-tag-press #(println "Tag pressed")
+                   :on-note-press #(println "Note pressed")
+                   :on-transaction-type-change #(println "Transaction type changed to:" %)
+                   :onBack #(-> props .-navigation .goBack)}])
 
 (defn root []
   (r/with-let [!root-state (rf/subscribe [:navigation/root-state])
@@ -97,18 +123,15 @@
                                  (.addListener navigation-ref "state" save-root-state!)))]
     [:> rnn/NavigationContainer {:ref add-listener!
                                  :initialState (when @!root-state (-> @!root-state .-data .-state))}
-     [:> Tabs.Navigator {:initialRouteName "Home"
-                         :tabBarActiveTintColor "blue"
-                         :tabBarInactiveTintColor "gray"}
-      [:> Tabs.Screen {:name "About"
-                       :component (fn [props] (r/as-element [about props]))
-                       :options {:title "About"}}]
-      [:> Tabs.Screen {:name "Home"
-                       :component (fn [props] (r/as-element [home props]))
-                       :options {:title "Home"}}]
-      [:> Tabs.Screen {:name "Settings"
-                       :component (fn [props] (r/as-element [settings props]))
-                       :options {:title "Settings"}}]]]))
+     [:> Stack.Navigator
+      [:> Stack.Group
+       [:> Stack.Screen {:name "MainTabs"
+                         :options {:headerShown false}
+                         :component (fn [props] (r/as-element [settings props]))}]]
+      [:> Stack.Group {:screenOptions {:presentation "modal"}}
+       [:> Stack.Screen {:name "InputModal"
+                         :options {:headerShown false}
+                         :component (fn [props] (r/as-element [input-modal props]))}]]]]))
 
 (defn start
   {:dev/after-load true}

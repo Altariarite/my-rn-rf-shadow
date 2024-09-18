@@ -4,62 +4,71 @@ import {
     FlatList,
     StyleSheet,
     Dimensions,
-    View,
+    ActivityIndicator,
 } from 'react-native';
 import BalanceCard from './BalanceCard';
 
-const DATA = [
-    {
-        id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
-        netWorth: 50000,
-        lastUpdated: '2023-04-15',
-        difference: 1500,
-    },
-    {
-        id: '3ac68afc-c605-48d3-a4f8-fbd91aa97f63',
-        netWorth: 75000,
-        lastUpdated: '2023-04-16',
-        difference: -500,
-    },
-    {
-        id: '58694a0f-3da1-471f-bd96-145571e29d72',
-        netWorth: 100000,
-        lastUpdated: '2023-04-17',
-        difference: 3000,
-    },
+const screenWidth = Dimensions.get('window').width;
+const cardWidth = screenWidth * 0.9; // 90% of screen width
+
+type BalanceCardData = {
+    id: string;
+    netWorth: number;
+    lastUpdated: string;
+    difference: number;
+};
+
+// Dummy data
+const dummyData: BalanceCardData[] = [
+    { id: '1', netWorth: 10000.50, lastUpdated: '2023-04-15', difference: 500.25 },
+    { id: '2', netWorth: 15000.75, lastUpdated: '2023-04-16', difference: -200.50 },
+    { id: '3', netWorth: 8000.00, lastUpdated: '2023-04-17', difference: 100.00 },
+    { id: '4', netWorth: 12500.25, lastUpdated: '2023-04-18', difference: 300.75 },
+    { id: '5', netWorth: 9800.50, lastUpdated: '2023-04-19', difference: -150.25 },
 ];
 
-const App = () => {
-    const screenHeight = Dimensions.get('window').height;
-    const screenWidth = Dimensions.get('window').width;
-    const containerHeight = screenHeight * 0.2; // 20% of screen height
-    const cardWidth = screenWidth * 0.8; // 80% of screen width
+type ScrollableProps = {
+    data?: BalanceCardData[];
+    isLoading: boolean;
+    onEndReached: () => void;
+    selectedId: string;
+};
+
+const Scrollable: React.FC<ScrollableProps> = ({
+    data = dummyData,
+    isLoading,
+    onEndReached,
+    selectedId
+}) => {
+    const renderItem = ({ item }: { item: BalanceCardData }) => (
+        <BalanceCard
+            netWorth={item.netWorth}
+            lastUpdated={item.lastUpdated}
+            difference={item.difference}
+            isSelected={item.id === selectedId}
+        />
+    );
+
+    const renderFooter = () => {
+        if (!isLoading) return null;
+        return <ActivityIndicator style={styles.loader} />;
+    };
 
     return (
         <SafeAreaView style={styles.safeArea}>
-            <View style={[styles.scrollableContainer, { height: containerHeight }]}>
-                <FlatList
-                    data={DATA}
-                    renderItem={({ item }) => (
-                        <BalanceCard
-                            netWorth={item.netWorth}
-                            lastUpdated={item.lastUpdated}
-                            difference={item.difference}
-                            isSelected={item.id === '3ac68afc-c605-48d3-a4f8-fbd91aa97f63'}
-                        />
-                    )}
-                    keyExtractor={item => item.id}
-                    horizontal={true}
-                    contentContainerStyle={[
-                        styles.listContent,
-                        { paddingHorizontal: screenWidth * 0.1 } // Add padding equal to 10% of screen width on each side
-                    ]}
-                    showsHorizontalScrollIndicator={false}
-                    snapToInterval={cardWidth}
-                    decelerationRate="fast"
-                    pagingEnabled
-                />
-            </View>
+            <FlatList
+                data={data}
+                renderItem={renderItem}
+                keyExtractor={item => item.id}
+                contentContainerStyle={[
+                    styles.listContent,
+                    { paddingHorizontal: screenWidth * 0.05 }
+                ]}
+                showsVerticalScrollIndicator={false}
+                onEndReached={onEndReached}
+                onEndReachedThreshold={0.1}
+                ListFooterComponent={renderFooter}
+            />
         </SafeAreaView>
     );
 };
@@ -68,12 +77,13 @@ const styles = StyleSheet.create({
     safeArea: {
         flex: 1,
     },
-    scrollableContainer: {
-        width: '100%',
-    },
     listContent: {
+        paddingVertical: 16,
+    },
+    loader: {
+        marginVertical: 20,
         alignItems: 'center',
     },
 });
 
-export default App;
+export default Scrollable;
