@@ -66,11 +66,7 @@
 ;;                             :color (if increase? "#4CAF50" "#F44336")}}
 ;;         (if increase? "↑" "↓")]]]]))
 
-(def Scrollable (js/require "../src/main/stories/Scrollable.tsx"))
-(def scrollable (.-default Scrollable))
 
-(def BalanceCard (.-default (js/require "../src/main/stories/BalanceCard.tsx")))
-(def BalanceSheet (.-default (js/require "../src/main/stories/BalanceSheet.tsx")))
 (def InputScreen (.-default (js/require "../src/main/stories/InputScreen.tsx")))
 (def CashflowScreen (.-default (js/require "../src/main/stories/CashflowScreen.tsx")))
 (def Modal (.-default (js/require "../src/main/stories/Modal.tsx")))

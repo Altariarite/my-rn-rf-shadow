@@ -6,8 +6,7 @@
             ["react-native" :as rn]
             [example.events]
             [example.subs]
-            [example.widgets :refer [CashflowScreen InputScreen Modal
-                                     scrollable]]
+            [example.widgets :refer [CashflowScreen InputScreen]]
             [expo.root :as expo-root]
             [re-frame.core :as rf]
             [reagent.core :as r]))
@@ -35,10 +34,6 @@
                          :align-items :center
                          :background-color :white}}
      [:> rn/View {:style {:align-items :center}}
-      [scrollable {:data dummy-data
-                   :is-loading false
-                   :on-end-reached #(println "End reached")
-                   :selected-id "1"}]
       ;; [:> BalanceCard {:netWorth 1000.50
       ;;                  :lastUpdated "2023-04-15"
       ;;                  :difference 50.25}]
@@ -97,10 +92,10 @@
 (defn settings [^js props]
   [:> rn/SafeAreaView {:style {:flex 1}
                        :justifyContent "flex-end"}
-   [:> CashflowScreen {:items {:2024-05-01 [{:id "1" :amount 100 :type "income" :tags ["food" "restaurants"] :date "2024-05-01"}
-                                            {:id "2" :amount 200 :type "expense" :tags ["food" "restaurants"] :date "2024-05-01"}]
-                               :2024-05-02 [{:id "3" :amount 300 :type "income" :tags ["food" "restaurants"] :date "2024-05-02"}]
-                               :2024-05-03 [{:id "4" :amount 400 :type "expense" :tags ["food" "restaurants"] :date "2024-05-03"}]}
+   [:> CashflowScreen {:items {:2024-05-01 [{:id "1" :amount 100 :type "income" :tags ["food" "restaurants"]}
+                                            {:id "2" :amount 200 :type "expense" :tags ["food" "restaurants"]}]
+                               :2024-05-02 [{:id "3" :amount 300 :type "income" :tags ["food" "restaurants"]}]
+                               :2024-05-03 [{:id "4" :amount 400 :type "expense" :tags ["food" "restaurants"]}]}
                        :onAddItem #(-> (.-navigation props) (.navigate "InputModal"))}]])
 
 (defn input-modal [^js props]
