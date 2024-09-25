@@ -12,10 +12,11 @@ type InputScreenProps = {
     onTagPress: () => void;
     currentDate: string; // Add this prop
     currentTag: string; // Add this prop
-    transactionType: 'spending' | 'income';
-    onTransactionTypeChange: (value: 'spending' | 'income') => void;
+    transactionType: 'spending' | 'income' | 'transfer';
+    onTransactionTypeChange: (value: 'spending' | 'income' | 'transfer') => void;
     isVisible: boolean;
     onBack;
+    onDone: () => void;
 };
 
 const InputScreen: React.FC<InputScreenProps> = ({
@@ -29,10 +30,12 @@ const InputScreen: React.FC<InputScreenProps> = ({
     transactionType,
     onTransactionTypeChange,
     onBack,
+    onDone
 }) => (
     <Modal
         title='Input'
         onBack={onBack}
+        onDone={onDone}
     >
         <KeyboardAvoidingView
             style={styles.container}
@@ -44,8 +47,21 @@ const InputScreen: React.FC<InputScreenProps> = ({
                     value={transactionType}
                     onValueChange={onTransactionTypeChange}
                     buttons={[
-                        { value: 'spending', label: 'Spending' },
-                        { value: 'income', label: 'Income' },
+                        {
+                            value: 'spending',
+                            label: 'Spending',
+                            style: transactionType === 'spending' ? styles.selectedButton : styles.unselectedButton,
+                        },
+                        {
+                            value: 'income',
+                            label: 'Income',
+                            style: transactionType === 'income' ? styles.selectedButton : styles.unselectedButton,
+                        },
+                        {
+                            value: 'transfer',
+                            label: 'Transfer',
+                            style: transactionType === 'transfer' ? styles.selectedButton : styles.unselectedButton,
+                        },
                     ]}
                     style={styles.segmentedButton}
                 />
@@ -55,7 +71,7 @@ const InputScreen: React.FC<InputScreenProps> = ({
                     keyboardType="numeric"
                     onChangeText={onAmountChange}
                     style={styles.input}
-                    placeholder="Enter amount"
+                    placeholder="Enter amount test"
                 />
 
                 <Card style={styles.card}>
@@ -132,6 +148,11 @@ const styles = StyleSheet.create({
     closeButton: {
         alignSelf: 'flex-end',
         padding: 8,
+    },
+    selectedButton: {
+        backgroundColor: '#f0f0f0', //Lightgray for selected button
+    },
+    unselectedButton: {
     },
 });
 

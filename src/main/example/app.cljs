@@ -4,8 +4,7 @@
             ["@react-navigation/native-stack" :as rnn-stack]
             ["expo-status-bar" :refer [StatusBar]]
             ["react-native" :as rn]
-            [example.events]
-            [example.subs]
+            [example.pubsubs]
             [example.widgets :refer [CashflowScreen InputScreen]]
             [expo.root :as expo-root]
             [re-frame.core :as rf]
@@ -95,7 +94,7 @@
    [:> CashflowScreen {:items {:2024-05-01 [{:id "1" :amount 100 :type "income" :tags ["food" "restaurants"]}
                                             {:id "2" :amount 200 :type "expense" :tags ["food" "restaurants"]}]
                                :2024-05-02 [{:id "3" :amount 300 :type "income" :tags ["food" "restaurants"]}]
-                               :2024-05-03 [{:id "4" :amount 400 :type "expense" :tags ["food" "restaurants"]}]}
+                               :2024-05-03 [{:id "4" :amount 500 :type "expense" :tags ["food" "restaurants"]}]}
                        :onAddItem #(-> (.-navigation props) (.navigate "InputModal"))}]])
 
 (defn input-modal [^js props]
@@ -107,6 +106,7 @@
                    :on-tag-press #(println "Tag pressed")
                    :on-note-press #(println "Note pressed")
                    :on-transaction-type-change #(println "Transaction type changed to:" %)
+                   :transaction-type "spending"
                    :onBack #(-> props .-navigation .goBack)}])
 
 (defn root []

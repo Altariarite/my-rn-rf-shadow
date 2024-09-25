@@ -1,5 +1,19 @@
-(ns example.db)
+(ns example.db
+  (:require ["dayjs" :as dayjs]))
+
+(defn get-today-string []
+  (.format (dayjs) "YYYY-MM-DD"))
 
 ;; initial state of app-db
-(defonce app-db {:counter 0
-                 :counter-tappable? true})
+(defonce app-db
+  {:transcations [{:id 1 :amount 200 :is-income? true :tags ["food" "restaurants"] :date (get-today-string) :account-id 1 :payee "McDonalds"}
+                  {:id 2 :amount 200 :is-income? false :tags ["food" "restaurants"] :date (get-today-string) :account-id 1 :payee "McDonalds"}
+                  {:id 3 :amount 300 :is-income? true :tags ["food" "restaurants"] :date (get-today-string) :account-id 1 :payee "McDonalds"}
+                  {:id 4 :amount 500 :is-income? false :tags ["food" "restaurants"] :date (get-today-string) :account-id 1 :payee "McDonalds"}]
+   :accounts [{:id 1 :name "Cash" :balance 1000.50}]
+   :current-date (get-today-string)
+   :input {:type "spending"
+           :amount nil
+           :date (get-today-string)
+           :tags []
+           :account-id 1}})
