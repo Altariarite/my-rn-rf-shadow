@@ -2,8 +2,10 @@
   (:require ["@react-navigation/bottom-tabs" :as rnn-tabs]
             ["@react-navigation/native" :as rnn]
             ["@react-navigation/native-stack" :as rnn-stack]
+            ["dayjs" :as dayjs]
             ["expo-status-bar" :refer [StatusBar]]
             ["react-native" :as rn]
+            [example.db :refer [get-today-string]]
             [example.pubsubs]
             [example.widgets :refer [CashflowScreen InputScreen]]
             [expo.root :as expo-root]
@@ -98,16 +100,19 @@
                        :onAddItem #(-> (.-navigation props) (.navigate "InputModal"))}]])
 
 (defn input-modal [^js props]
-  [:> InputScreen {:account-name "Cash"
-                   :remaining-balance 1000.50
-                   :current-date "2023-04-15"
-                   :on-amount-change #(println "Amount changed to:" %)
-                   :on-calendar-press #(println "Calendar pressed")
-                   :on-tag-press #(println "Tag pressed")
-                   :on-note-press #(println "Note pressed")
-                   :on-transaction-type-change #(println "Transaction type changed to:" %)
-                   :transaction-type "spending"
-                   :onBack #(-> props .-navigation .goBack)}])
+  (let [show-date-picker? (rf/subscribe [:show-date-picker?])]
+    [:> InputScreen {:account-name "Cash"
+                     :remaining-balance 1000.50
+                     :selected-date (dayjs)
+                     :current-date (get-today-string)
+                     :on-amount-change #(println "Amount changed to:" %)
+                     :on-calendar-press #(rf/dispatch [:toggle-date-picker])
+                     :show-date-picker @show-date-picker?
+                     :on-tag-press #(println "Tag pressed")
+                     :on-note-press #(println "Note pressed")
+                     :on-transaction-type-change #(println "Transaction type changed to:" %)
+                     :transaction-type "spending"
+                     :onBack #(-> props .-navigation .goBack)}]))
 
 (defn root []
   (r/with-let [!root-state (rf/subscribe [:navigation/root-state])

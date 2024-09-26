@@ -1,8 +1,8 @@
 import React from 'react';
-import { View, TextInput, Text, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
-import { Card, SegmentedButtons } from 'react-native-paper';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import { View, TextInput, StyleSheet, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard, ScrollView } from 'react-native';
+import { SegmentedButtons } from 'react-native-paper';
 import Modal from './Modal'; // Adjust the import path as needed
+import InputCard from './InputCard'; // Add this import
 
 type InputScreenProps = {
     accountName: string;
@@ -17,7 +17,27 @@ type InputScreenProps = {
     isVisible: boolean;
     onBack;
     onDone: () => void;
+    onDateChange;
+    showDatePicker: boolean;
+    selectedDate: Date;
 };
+
+const DismissKeyboard = React.memo(({ children }: { children: React.ReactNode }) => {
+
+    return (
+        <KeyboardAvoidingView
+            enabled
+            style={{ flex: 1 }}
+        >
+            <ScrollView
+                keyboardShouldPersistTaps={'handled'}
+                keyboardDismissMode={'on-drag'}
+            >
+                {children}
+            </ScrollView>
+        </KeyboardAvoidingView>
+    );
+});
 
 const InputScreen: React.FC<InputScreenProps> = ({
     accountName,
@@ -30,73 +50,66 @@ const InputScreen: React.FC<InputScreenProps> = ({
     transactionType,
     onTransactionTypeChange,
     onBack,
-    onDone
-}) => (
-    <Modal
-        title='Input'
-        onBack={onBack}
-        onDone={onDone}
-    >
-        <KeyboardAvoidingView
-            style={styles.container}
-            behavior={Platform.OS === "ios" ? "padding" : "height"}
-            keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 20}
+    onDone,
+    onDateChange,
+    showDatePicker,
+    selectedDate,
+}) => {
+    return (
+        <Modal
+            title='Input'
+            onBack={onBack}
+            onDone={onDone}
         >
-            <View style={styles.content}>
-                <SegmentedButtons
-                    value={transactionType}
-                    onValueChange={onTransactionTypeChange}
-                    buttons={[
-                        {
-                            value: 'spending',
-                            label: 'Spending',
-                            style: transactionType === 'spending' ? styles.selectedButton : styles.unselectedButton,
-                        },
-                        {
-                            value: 'income',
-                            label: 'Income',
-                            style: transactionType === 'income' ? styles.selectedButton : styles.unselectedButton,
-                        },
-                        {
-                            value: 'transfer',
-                            label: 'Transfer',
-                            style: transactionType === 'transfer' ? styles.selectedButton : styles.unselectedButton,
-                        },
-                    ]}
-                    style={styles.segmentedButton}
-                />
 
-                <TextInput
-                    autoFocus
-                    keyboardType="numeric"
-                    onChangeText={onAmountChange}
-                    style={styles.input}
-                    placeholder="Enter amount test"
-                />
+            <DismissKeyboard>
+                <View style={styles.content}>
+                    <SegmentedButtons
+                        value={transactionType}
+                        onValueChange={onTransactionTypeChange}
+                        buttons={[
+                            {
+                                value: 'spending',
+                                label: 'Spending',
+                                style: transactionType === 'spending' ? styles.selectedButton : styles.unselectedButton,
+                            },
+                            {
+                                value: 'income',
+                                label: 'Income',
+                                style: transactionType === 'income' ? styles.selectedButton : styles.unselectedButton,
+                            },
+                            {
+                                value: 'transfer',
+                                label: 'Transfer',
+                                style: transactionType === 'transfer' ? styles.selectedButton : styles.unselectedButton,
+                            },
+                        ]}
+                        style={styles.segmentedButton}
+                    />
 
-                <Card style={styles.card}>
-                    <Card.Content>
-                        <Text style={styles.accountName}>{accountName}</Text>
-                        <Text style={styles.balance}>
-                            ${remainingBalance.toFixed(2)}
-                        </Text>
-                    </Card.Content>
-                </Card>
+                    <TextInput
+                        keyboardType="numeric"
+                        onChangeText={onAmountChange}
+                        style={styles.input}
+                        placeholder="Enter amount"
+                    />
 
-                <View style={styles.buttonContainer}>
-                    <TouchableOpacity style={styles.roundedSquareButton} onPress={onCalendarPress}>
-                        <Icon name="calendar-today" size={24} color="#FFFFFF" />
-                        <Text style={styles.buttonText}>{currentDate}</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.roundedSquareButton} onPress={onTagPress}>
-                        <Icon name="local-offer" size={24} color="#FFFFFF" />
-                        <Text style={styles.buttonText}>{currentTag || "Tag"}</Text>
-                    </TouchableOpacity>
+                    <InputCard
+                        accountName={accountName}
+                        remainingBalance={remainingBalance}
+                        onCalendarPress={onCalendarPress}
+                        currentDate={currentDate}
+                        showDatePicker={showDatePicker}
+                        selectedDate={selectedDate}
+                        onDateChange={onDateChange}
+                        currentTag={currentTag}
+                    />
                 </View>
-            </View>
-        </KeyboardAvoidingView>
-    </Modal>
-);
+            </DismissKeyboard>
+
+        </Modal >
+    );
+};
 
 const styles = StyleSheet.create({
     container: {
@@ -111,36 +124,35 @@ const styles = StyleSheet.create({
         marginBottom: 16,
         width: '100%',
     },
-    card: {
+    mainCard: {
         width: '100%',
         marginBottom: 16,
     },
-    accountName: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        marginBottom: 4,
+    mainCardContent: {
+        padding: 0,
+    },
+    innerCard: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        padding: 16,
+        borderBottomWidth: 1,
+        borderBottomColor: '#e0e0e0',
+    },
+    middleCard: {
+        borderTopWidth: 1,
+        borderTopColor: '#e0e0e0',
+    },
+    iconContainer: {
+        width: 40,
+        alignItems: 'flex-start',
+    },
+    cardItemText: {
+        fontSize: 16,
+        flex: 1,
     },
     balance: {
-        fontSize: 20,
-        color: '#333333', // Changed from green to dark gray
-    },
-    buttonContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginTop: 16,
-    },
-    roundedSquareButton: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: '#666666', // Changed from blue to medium gray
-        borderRadius: 12,
-        padding: 12,
-    },
-    buttonText: {
-        marginLeft: 8,
         fontSize: 16,
-        color: '#FFFFFF',
+        color: '#333333',
     },
     segmentedButton: {
         marginBottom: 16,
@@ -156,4 +168,5 @@ const styles = StyleSheet.create({
     },
 });
 
-export default InputScreen;
+export default React.memo(InputScreen);
+
