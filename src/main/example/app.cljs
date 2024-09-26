@@ -100,18 +100,21 @@
                        :onAddItem #(-> (.-navigation props) (.navigate "InputModal"))}]])
 
 (defn input-modal [^js props]
-  (let [show-date-picker? (rf/subscribe [:show-date-picker?])]
+  (let [show-date-picker? (rf/subscribe [:show-date-picker?])
+        selected-date (rf/subscribe [:selected-date])
+        transaction-type (rf/subscribe [:transaction-type])
+        current-date (rf/subscribe [:current-date])]
     [:> InputScreen {:account-name "Cash"
                      :remaining-balance 1000.50
-                     :selected-date (dayjs)
-                     :current-date (get-today-string)
+                     :selected-date @selected-date
+                     :current-date @current-date
                      :on-amount-change #(println "Amount changed to:" %)
                      :on-calendar-press #(rf/dispatch [:toggle-date-picker])
                      :show-date-picker @show-date-picker?
+                     :on-date-change #(rf/dispatch [:set-selected-date (-> % .-date)])
                      :on-tag-press #(println "Tag pressed")
-                     :on-note-press #(println "Note pressed")
-                     :on-transaction-type-change #(println "Transaction type changed to:" %)
-                     :transaction-type "spending"
+                     :on-transaction-type-change #(rf/dispatch [:select-transaction-type %])
+                     :transaction-type @transaction-type
                      :onBack #(-> props .-navigation .goBack)}]))
 
 (defn root []

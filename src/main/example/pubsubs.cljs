@@ -1,6 +1,7 @@
 (ns example.pubsubs
-  (:require [re-frame.core :as rf]
-            [example.db :as db :refer [app-db]]))
+  (:require ["dayjs" :as dayjs]
+            [example.db :as db :refer [app-db]]
+            [re-frame.core :as rf]))
 
 ;; Pub
 (rf/reg-event-db
@@ -25,6 +26,34 @@
  (fn [db _]
    (get-in db [:input :show-date-picker])))
 
+;; Selected date
+(rf/reg-event-db
+ :set-selected-date
+ (fn [db [_ selected-date]]
+   (assoc-in db [:input :transaction :selected-date] selected-date)))
+
+(rf/reg-sub
+ :selected-date
+ (fn [db _]
+   (dayjs (get-in db [:input :transaction :selected-date]))))
+
+;; Current date
+(rf/reg-sub
+ :current-date
+ :<- [:selected-date]
+ (fn [selected-date _]
+   (.format selected-date "LL")))
+
+;; Select transaction type
+(rf/reg-event-db
+ :select-transaction-type
+ (fn [db [_ transaction-type]]
+   (assoc-in db [:input :transaction :type] transaction-type)))
+
+(rf/reg-sub
+ :transaction-type
+ (fn [db _]
+   (get-in db [:input :transaction :type])))
 
 (rf/reg-sub
  :navigation/root-state

@@ -1,6 +1,6 @@
 import React from 'react';
-import { View, TextInput, StyleSheet, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard, ScrollView } from 'react-native';
-import { SegmentedButtons } from 'react-native-paper';
+import { View, TextInput, StyleSheet, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard, ScrollView, Dimensions } from 'react-native';
+import SegmentedControl from '@react-native-segmented-control/segmented-control';
 import Modal from './Modal'; // Adjust the import path as needed
 import InputCard from './InputCard'; // Add this import
 
@@ -64,30 +64,21 @@ const InputScreen: React.FC<InputScreenProps> = ({
 
             <DismissKeyboard>
                 <View style={styles.content}>
-                    <SegmentedButtons
-                        value={transactionType}
-                        onValueChange={onTransactionTypeChange}
-                        buttons={[
-                            {
-                                value: 'spending',
-                                label: 'Spending',
-                                style: transactionType === 'spending' ? styles.selectedButton : styles.unselectedButton,
-                            },
-                            {
-                                value: 'income',
-                                label: 'Income',
-                                style: transactionType === 'income' ? styles.selectedButton : styles.unselectedButton,
-                            },
-                            {
-                                value: 'transfer',
-                                label: 'Transfer',
-                                style: transactionType === 'transfer' ? styles.selectedButton : styles.unselectedButton,
-                            },
-                        ]}
-                        style={styles.segmentedButton}
-                    />
+                    <View style={styles.segmentedControlContainer}>
+                        <SegmentedControl
+                            values={['-', '+']}
+                            selectedIndex={['spending', 'income'].indexOf(transactionType)}
+                            onChange={(event) => {
+                                const newValue = ['spending', 'income'][event.nativeEvent.selectedSegmentIndex];
+                                onTransactionTypeChange(newValue as 'spending' | 'income');
+                            }}
+                            style={styles.segmentedControl}
+                            fontStyle={styles.segmentedControlText}
+                        />
+                    </View>
 
                     <TextInput
+                        autoFocus
                         keyboardType="numeric"
                         onChangeText={onAmountChange}
                         style={styles.input}
@@ -110,6 +101,8 @@ const InputScreen: React.FC<InputScreenProps> = ({
         </Modal >
     );
 };
+
+const { width } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
     container: {
@@ -154,17 +147,21 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: '#333333',
     },
-    segmentedButton: {
+    segmentedControl: {
+        width: width * 0.6, // Adjust this value to change the width
+        height: 40, // Increase height to accommodate larger text
+    },
+    segmentedControlContainer: {
+        alignItems: 'center',
         marginBottom: 16,
+    },
+    segmentedControlText: {
+        fontSize: 16, // Increase font size
+        fontWeight: 'bold',
     },
     closeButton: {
         alignSelf: 'flex-end',
         padding: 8,
-    },
-    selectedButton: {
-        backgroundColor: '#f0f0f0', //Lightgray for selected button
-    },
-    unselectedButton: {
     },
 });
 
