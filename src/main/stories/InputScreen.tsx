@@ -11,7 +11,7 @@ type InputScreenProps = {
     onCalendarPress: () => void;
     onTagPress: () => void;
     currentDate: string; // Add this prop
-    currentTag: string; // Add this prop
+    currentCategory: string; // Add this prop
     transactionType: 'spending' | 'income' | 'transfer';
     onTransactionTypeChange: (value: 'spending' | 'income' | 'transfer') => void;
     isVisible: boolean;
@@ -20,6 +20,7 @@ type InputScreenProps = {
     onDateChange;
     showDatePicker: boolean;
     selectedDate: Date;
+    onCategoryPress: () => void;
 };
 
 const DismissKeyboard = React.memo(({ children }: { children: React.ReactNode }) => {
@@ -46,7 +47,7 @@ const InputScreen: React.FC<InputScreenProps> = ({
     onCalendarPress,
     onTagPress,
     currentDate,
-    currentTag,
+    currentCategory,
     transactionType,
     onTransactionTypeChange,
     onBack,
@@ -54,6 +55,7 @@ const InputScreen: React.FC<InputScreenProps> = ({
     onDateChange,
     showDatePicker,
     selectedDate,
+    onCategoryPress,
 }) => {
     return (
         <Modal
@@ -93,7 +95,8 @@ const InputScreen: React.FC<InputScreenProps> = ({
                         showDatePicker={showDatePicker}
                         selectedDate={selectedDate}
                         onDateChange={onDateChange}
-                        currentTag={currentTag}
+                        currentCategory={currentCategory}
+                        onCategoryPress={onCategoryPress}
                     />
                 </View>
             </DismissKeyboard>

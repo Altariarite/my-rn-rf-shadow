@@ -60,4 +60,24 @@
  (fn [db _]
    (get-in db [:navigation :root-state])))
 
+;; Modal
+(rf/reg-event-db
+ :show-modal
+ (fn [db _]
+   (assoc db :modal-visible? true)))
 
+(rf/reg-event-db
+ :hide-modal
+ (fn [db _]
+   (assoc db :modal-visible? false)))
+
+(rf/reg-event-fx
+ :navigate-to-category
+ (fn [{:keys [db]} _]
+   {:fx [[:dispatch [:hide-modal]]
+         [:dispatch [:navigation/navigate "CategoryScreen"]]]}))
+
+(rf/reg-sub
+ :modal-visible?
+ (fn [db]
+   (:modal-visible? db)))

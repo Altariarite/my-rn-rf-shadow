@@ -2,12 +2,10 @@
   (:require ["@react-navigation/bottom-tabs" :as rnn-tabs]
             ["@react-navigation/native" :as rnn]
             ["@react-navigation/native-stack" :as rnn-stack]
-            ["dayjs" :as dayjs]
             ["expo-status-bar" :refer [StatusBar]]
             ["react-native" :as rn]
-            [example.db :refer [get-today-string]]
             [example.pubsubs]
-            [example.widgets :refer [CashflowScreen InputScreen]]
+            [example.widgets :refer [CashflowScreen CategoryScreen InputScreen]]
             [expo.root :as expo-root]
             [re-frame.core :as rf]
             [reagent.core :as r]))
@@ -112,10 +110,25 @@
                      :on-calendar-press #(rf/dispatch [:toggle-date-picker])
                      :show-date-picker @show-date-picker?
                      :on-date-change #(rf/dispatch [:set-selected-date (-> % .-date)])
-                     :on-tag-press #(println "Tag pressed")
+                     :on-category-press #(-> (.-navigation props) (.navigate "CategoryScreen"))
                      :on-transaction-type-change #(rf/dispatch [:select-transaction-type %])
                      :transaction-type @transaction-type
                      :onBack #(-> props .-navigation .goBack)}]))
+(def dummy-categories
+  [{:id "1" :name "Salary" :group "Inflow"}
+   {:id "2" :name "Rent" :group "Bill"}
+   {:id "3" :name "Groceries" :group "Need"}
+   {:id "4" :name "Dining Out" :group "Want"}
+   {:id "5" :name "Utilities" :group "Bill"}
+   {:id "6" :name "Transportation" :group "Need"}
+   {:id "7" :name "Entertainment" :group "Want"}
+   {:id "8" :name "Investments" :group "Inflow"}
+   {:id "9" :name "Healthcare" :group "Need"}
+   {:id "10" :name "Shopping" :group "Want"}])
+
+(defn category-modal [^js props]
+  [:> CategoryScreen {:onBack #(-> props .-navigation .goBack)
+                      :categories dummy-categories}])
 
 (defn root []
   (r/with-let [!root-state (rf/subscribe [:navigation/root-state])
@@ -129,12 +142,16 @@
      [:> Stack.Navigator
       [:> Stack.Group
        [:> Stack.Screen {:name "MainTabs"
-                         :options {:headerShown false}
+                        ;;  :options {:headerShown false}
                          :component (fn [props] (r/as-element [settings props]))}]]
-      [:> Stack.Group {:screenOptions {:presentation "modal"}}
+      [:> Stack.Group ;; {:screenOptions {:presentation "modal"}}
        [:> Stack.Screen {:name "InputModal"
-                         :options {:headerShown false}
-                         :component (fn [props] (r/as-element [input-modal props]))}]]]]))
+                        ;;  :options {:headerShown false}
+                        ;; :screenOptions {:presentation "modal"}
+                         :component (fn [props] (r/as-element [input-modal props]))}]
+       [:> Stack.Screen {:name "CategoryScreen"
+                        ;;  :options {:headerShown false}
+                         :component (fn [props] (r/as-element [category-modal props]))}]]]]))
 
 (defn start
   {:dev/after-load true}
@@ -144,3 +161,4 @@
 (defn init []
   (rf/dispatch-sync [:initialize-db])
   (start))
+

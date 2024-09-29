@@ -12,7 +12,8 @@ type InputCardProps = {
     showDatePicker: boolean;
     selectedDate: Date;
     onDateChange;
-    currentTag: string;
+    currentCategory: string; // Changed from currentTag
+    onCategoryPress: () => void;
 };
 
 const InputCard = ({
@@ -23,7 +24,8 @@ const InputCard = ({
     showDatePicker,
     selectedDate,
     onDateChange,
-    currentTag,
+    currentCategory, // Changed from currentTag
+    onCategoryPress,
 }: InputCardProps) => {
     const height = useSharedValue(0);
 
@@ -63,12 +65,12 @@ const InputCard = ({
                         onChange={onDateChange}
                     />
                 </Animated.View>
-                <View style={styles.innerCard}>
+                <TouchableOpacity onPress={onCategoryPress} style={styles.innerCard}>
                     <View style={styles.iconContainer}>
-                        <Icon name="local-offer" size={24} color="#666666" />
+                        <Icon name="category" size={24} color="#666666" />
                     </View>
-                    <Text style={styles.cardItemText}>{currentTag || "Tag"}</Text>
-                </View>
+                    <Text style={styles.cardItemText}>{currentCategory || "Category"}</Text>
+                </TouchableOpacity>
             </View>
         </View>
     );
