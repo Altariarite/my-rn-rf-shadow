@@ -88,7 +88,7 @@
        "Built with React Native, Expo, Reagent, re-frame, and React Navigation"]]
      [:> StatusBar {:style "auto"}]]))
 
-(defn settings [^js props]
+(defn cashflow-screen [^js props]
   [:> rn/SafeAreaView {:style {:flex 1}
                        :justifyContent "flex-end"}
    [:> CashflowScreen {:items {:2024-05-01 [{:id "1" :amount 100 :type "income" :tags ["food" "restaurants"]}
@@ -130,6 +130,28 @@
   [:> CategoryScreen {:onBack #(-> props .-navigation .goBack)
                       :categories dummy-categories}])
 
+(defn main-stack []
+  [:> Stack.Navigator
+   [:> Stack.Screen {:name "CashflowScreen"
+                     :options {:headerShown false}
+                     :component (fn [props] (r/as-element [cashflow-screen props]))}]])
+
+(defn input-stack []
+  [:> Stack.Navigator
+   [:> Stack.Screen {:name "Input"
+
+                     :component (fn [props] (r/as-element [input-modal props]))}]
+   [:> Stack.Screen {:name "CategoryScreen"
+                     :component (fn [props] (r/as-element [category-modal props]))}]])
+
+(defn tab-navigator []
+  [:> Tabs.Navigator
+   [:> Tabs.Screen {:name "MainTabs"
+                    :component (fn [props] (r/as-element [main-stack props]))}]
+   [:> Tabs.Screen {:name "InputTabs"
+                    :options {:headerShown false}
+                    :component (fn [props] (r/as-element [input-stack props]))}]])
+
 (defn root []
   (r/with-let [!root-state (rf/subscribe [:navigation/root-state])
                save-root-state! (fn [^js state]
@@ -139,19 +161,7 @@
                                  (.addListener navigation-ref "state" save-root-state!)))]
     [:> rnn/NavigationContainer {:ref add-listener!
                                  :initialState (when @!root-state (-> @!root-state .-data .-state))}
-     [:> Stack.Navigator
-      [:> Stack.Group
-       [:> Stack.Screen {:name "MainTabs"
-                        ;;  :options {:headerShown false}
-                         :component (fn [props] (r/as-element [settings props]))}]]
-      [:> Stack.Group ;; {:screenOptions {:presentation "modal"}}
-       [:> Stack.Screen {:name "InputModal"
-                        ;;  :options {:headerShown false}
-                        ;; :screenOptions {:presentation "modal"}
-                         :component (fn [props] (r/as-element [input-modal props]))}]
-       [:> Stack.Screen {:name "CategoryScreen"
-                        ;;  :options {:headerShown false}
-                         :component (fn [props] (r/as-element [category-modal props]))}]]]]))
+     [tab-navigator]]))
 
 (defn start
   {:dev/after-load true}
