@@ -23,6 +23,9 @@ const ItemList: React.FC<{ items: GroupedItems, onAddItem: () => void }> = ({ it
                 renderItem={renderItem}
                 keyExtractor={(item) => item[0]}
             />
+            <TouchableOpacity style={styles.floatingButton} onPress={onAddItem}>
+                <Text style={styles.buttonText}>+</Text>
+            </TouchableOpacity>
         </View>
     );
 };

@@ -58,50 +58,43 @@ const InputScreen: React.FC<InputScreenProps> = ({
     onCategoryPress,
 }) => {
     return (
-        <Modal
-            title='Input'
-            onBack={onBack}
-            onDone={onDone}
-        >
-
-            <DismissKeyboard>
-                <View style={styles.content}>
-                    <View style={styles.segmentedControlContainer}>
-                        <SegmentedControl
-                            values={['-', '+']}
-                            selectedIndex={['spending', 'income'].indexOf(transactionType)}
-                            onChange={(event) => {
-                                const newValue = ['spending', 'income'][event.nativeEvent.selectedSegmentIndex];
-                                onTransactionTypeChange(newValue as 'spending' | 'income');
-                            }}
-                            style={styles.segmentedControl}
-                            fontStyle={styles.segmentedControlText}
-                        />
-                    </View>
-
-                    <TextInput
-                        autoFocus
-                        keyboardType="numeric"
-                        onChangeText={onAmountChange}
-                        style={styles.input}
-                        placeholder="Enter amount"
-                    />
-
-                    <InputCard
-                        accountName={accountName}
-                        remainingBalance={remainingBalance}
-                        onCalendarPress={onCalendarPress}
-                        currentDate={currentDate}
-                        showDatePicker={showDatePicker}
-                        selectedDate={selectedDate}
-                        onDateChange={onDateChange}
-                        currentCategory={currentCategory}
-                        onCategoryPress={onCategoryPress}
+        <DismissKeyboard>
+            <View style={styles.content}>
+                <View style={styles.segmentedControlContainer}>
+                    <SegmentedControl
+                        values={['-', '+']}
+                        selectedIndex={['spending', 'income'].indexOf(transactionType)}
+                        onChange={(event) => {
+                            const newValue = ['spending', 'income'][event.nativeEvent.selectedSegmentIndex];
+                            onTransactionTypeChange(newValue as 'spending' | 'income');
+                        }}
+                        style={styles.segmentedControl}
+                        fontStyle={styles.segmentedControlText}
                     />
                 </View>
-            </DismissKeyboard>
 
-        </Modal >
+                <TextInput
+                    autoFocus
+                    keyboardType="numeric"
+                    onChangeText={onAmountChange}
+                    style={styles.input}
+                    placeholder="Enter amount"
+                />
+
+                <InputCard
+                    accountName={accountName}
+                    remainingBalance={remainingBalance}
+                    onCalendarPress={onCalendarPress}
+                    currentDate={currentDate}
+                    showDatePicker={showDatePicker}
+                    selectedDate={selectedDate}
+                    onDateChange={onDateChange}
+                    currentCategory={currentCategory}
+                    onCategoryPress={onCategoryPress}
+                />
+            </View>
+        </DismissKeyboard>
+
     );
 };
 

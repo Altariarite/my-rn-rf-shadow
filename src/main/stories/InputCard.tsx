@@ -69,7 +69,12 @@ const InputCard = ({
                     <View style={styles.iconContainer}>
                         <Icon name="category" size={24} color="#666666" />
                     </View>
-                    <Text style={styles.cardItemText}>{currentCategory || "Category"}</Text>
+                    <Text style={[
+                        styles.cardItemText,
+                        !currentCategory && styles.placeholderText
+                    ]}>
+                        {currentCategory || "Select category"}
+                    </Text>
                 </TouchableOpacity>
             </View>
         </View>
@@ -114,6 +119,9 @@ const styles = StyleSheet.create({
     balance: {
         fontSize: 16,
         color: '#333333',
+    },
+    placeholderText: {
+        color: '#999999',
     },
 });
 

@@ -11,9 +11,10 @@ type CategoryScreenProps = {
     categories: Category[];
     onSearch: (query: string) => void;
     onAddCategory: () => void;
+    onCategoryPress: (category: Category) => void;
 };
 
-const CategoryScreen = ({ categories, onAddCategory }: CategoryScreenProps) => {
+const CategoryScreen = ({ categories, onAddCategory, onCategoryPress }: CategoryScreenProps) => {
     const groupedCategories = {
         Inflow: categories.filter(c => c.group === 'Inflow'),
         Bill: categories.filter(c => c.group === 'Bill'),
@@ -21,13 +22,23 @@ const CategoryScreen = ({ categories, onAddCategory }: CategoryScreenProps) => {
         Want: categories.filter(c => c.group === 'Want'),
     };
 
+    const renderCategoryItem = ({ item }: { item: Category }) => (
+        <TouchableOpacity
+            style={styles.categoryItemContainer}
+            onPress={() => onCategoryPress(item)}
+        >
+            <Text style={styles.categoryItemText}>{item.name}</Text>
+        </TouchableOpacity>
+    );
+
     const renderCategoryGroup = ({ item: [group, cats] }: { item: [string, Category[]] }) => (
         <View style={styles.groupContainer}>
             <Text style={styles.groupTitle}>{group}</Text>
             <FlatList
                 data={cats}
                 keyExtractor={(item) => item.id}
-                renderItem={({ item }) => <Text style={styles.categoryItem}>{item.name}</Text>}
+                renderItem={renderCategoryItem}
+                ItemSeparatorComponent={() => <View style={styles.itemSeparator} />}
             />
         </View>
     );
@@ -70,6 +81,21 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: 'bold',
         marginBottom: 10,
+    },
+    categoryItemContainer: {
+        backgroundColor: '#ffffff',
+        padding: 15,
+        borderRadius: 8,
+        borderWidth: 1,
+        borderColor: '#d0d0d0',
+        marginVertical: 5,
+    },
+    categoryItemText: {
+        fontSize: 16,
+        color: '#333333',
+    },
+    itemSeparator: {
+        height: 10,
     },
     categoryItem: {
         fontSize: 16,
